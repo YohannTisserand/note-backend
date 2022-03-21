@@ -2,7 +2,6 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const mongoose = require('mongoose')
 const Note = require('./models/notes')
 
 const requestLogger = (request, response, next) => {
@@ -21,13 +20,6 @@ app.use(cors())
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
 })
-
-const generateId = () => {
-  const maxId = notes.length > 0
-    ? Math.max(...notes.map(n => n.id))
-    : 0
-  return maxId + 1
-}
 
 app.post('/api/notes', (request, response) => {
   const body = request.body
@@ -52,9 +44,9 @@ app.put('/api/notes/:id', (request, response, next) => {
   const { content, important } = request.body
 
   Note.findByIdAndUpdate(
-    request.params.id, 
-    { content, important }, 
-    { new: true, runValidators: true, context: 'query'})
+    request.params.id,
+    { content, important },
+    { new: true, runValidators: true, context: 'query' })
 
     .then(updatedNote => {
       response.json(updatedNote)
@@ -92,7 +84,7 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id'})
+    return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
