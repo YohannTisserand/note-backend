@@ -14,33 +14,51 @@ beforeEach(async () => {
     await noteObject.save()
   }
 })
+describe('when there is initialy some note saved', () => {
+  test('notes are returned as json', async () => {
+    console.log('entered test')
+    await api
+      .get('/api/notes')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
 
-test('notes are returned as json', async () => {
-  console.log('entered test')
-  await api
-    .get('/api/notes')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+  test('all notes are returned', async () => {
+    const response = await api.get('/api/notes')
+    expect(response.body).toHaveLength(helper.initialNotes.length)
+  })
+
+  test('a specific note is within the returned notes', async () => {
+    const response = await api.get('/api/notes')
+
+    const contents = response.body.map(r => r.content)
+    expect(contents).toContain(
+      'Browser can execute only Javascript'
+    )
+  })
 })
 
-test('there are two notes', async () => {
-  const response = await api.get('/api/notes')
-  expect(response.body).toHaveLength(helper.initialNotes.length)
+describe('viewing a specific note', () => {
+  test('succeeds with a valid id', async () => {
+    const notesAtStart = await helper.notesInDb()
+
+    const noteToView = notesAtStart[0]
+
+    const resultNote = await api
+      .get(`/api/notes/${noteToView.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const processedNoteToView = JSON.parse(JSON.stringify(noteToView))
+
+    expect(resultNote.body).toEqual(processedNoteToView)
+  })
 })
 
 test('the first note is about HTTP methods', async () => {
   const response = await api.get('/api/notes')
 
   expect(response.body[0].content).toBe('HTML is easy')
-})
-
-test('a specific note is within the returned notes', async () => {
-  const response = await api.get('/api/notes')
-
-  const contents = response.body.map(r => r.content)
-  expect(contents).toContain(
-    'Browser can execute only Javascript'
-  )
 })
 
 test('a valid note can be added', async () => {
