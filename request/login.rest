@@ -1,7 +1,16 @@
-post http://localhost:3001/api/login
+# post http://localhost:3001/api/login
+# Content-Type: application/json
+
+# {
+#   "username": "shiddo",
+#   "password": "mypassword123"
+# }
+
+post http://localhost:3001/api/notes
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNoaWRkbyIsImlkIjoiNjIzYWM2NmE4YzdhOWE0ZTk4MzIyNWY0IiwiaWF0IjoxNjQ4MDI2MzE0fQ.V2PnslqfhV2LnimsxKTDnhu6dstLwXqvEu4PRY2qJ2o
 
 {
-  "username": "shiddo",
-  "password": "mypassword123"
+  "content": "Test Token Note",
+  "important": true
 }
