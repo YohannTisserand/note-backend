@@ -37,6 +37,27 @@ describe('when there is initially no user in db', () => {
     const usernames = usersAtEnd.map(user => user.username)
     expect(usernames).toContain(newUser.username)
   })
+
+  test('creation fails with proper statuscode and message if username is already taken', async () => {
+    const userAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'root',
+      name: 'superuser',
+      password: 'mypassword123'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('username is already taken')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toEqual(userAtStart)
+  })
 })
 
 afterAll(() => {
